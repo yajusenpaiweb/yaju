@@ -21,7 +21,16 @@ const syncTextEl = document.getElementById("sync-text");
 const cdHoursEl = document.getElementById("cd-hours");
 const cdMinutesEl = document.getElementById("cd-minutes");
 const cdSecondsEl = document.getElementById("cd-seconds");
-const cdMsEl = document.querySelector(".cd-ms");
+const cdMsEl = document.getElementById("cd-ms");
+
+const cddDaysEl = document.getElementById("cdd-days");
+const cddHoursEl = document.getElementById("cdd-hours");
+const cddMinutesEl = document.getElementById("cdd-minutes");
+const cddSecondsEl = document.getElementById("cdd-seconds");
+const cddMsEl = document.getElementById("cdd-ms");
+
+const TARGET_DATE_TIME = new Date("2026-08-10T00:00:00+09:00").getTime();
+
 const currentDateEl = document.getElementById("current-date");
 const currentTimeEl = document.getElementById("current-time");
 const armedTextEl = document.getElementById("armed-text");
@@ -304,6 +313,22 @@ function tick() {
 
     currentDateEl.textContent = `${d.getFullYear()}/${pad2(d.getMonth() + 1)}/${pad2(d.getDate())} (${wd[d.getDay()]})`;
     currentTimeEl.textContent = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+
+    const leftDay = TARGET_DATE_TIME - now;
+    if (leftDay <= 0) {
+        cddDaysEl.textContent = "0";
+        cddHoursEl.textContent = "00";
+        cddMinutesEl.textContent = "00";
+        cddSecondsEl.textContent = "00";
+        cddMsEl.textContent = ".00";
+    } else {
+        const dSec = Math.floor(leftDay / 1000);
+        cddDaysEl.textContent = Math.floor(dSec / 86400);
+        cddHoursEl.textContent = pad2(Math.floor((dSec % 86400) / 3600));
+        cddMinutesEl.textContent = pad2(Math.floor((dSec % 3600) / 60));
+        cddSecondsEl.textContent = pad2(dSec % 60);
+        cddMsEl.textContent = "." + pad2(Math.floor((leftDay % 1000) / 10));
+    }
 
     const left = targetTime - now;
 
