@@ -9,6 +9,7 @@ let timeOffset = 0;
 let isSynced = false;
 let isArmed = true; // 開いた瞬間に有効化
 let isRinging = false;
+let hasTriggered = false; // 一度鳴ったら再トリガーしない
 
 // アラーム音: プロジェクトフォルダ内の alarm.mp3 を使用
 const alarmAudio = new Audio("alarm.mp3");
@@ -173,14 +174,23 @@ function startAlarm() {
 }
 
 function stopAlarm() {
+    // Clear any preset interval playing looping audio
     if (presetIntervalId) {
         clearInterval(presetIntervalId);
         presetIntervalId = null;
     }
+    // Stop the main alarm audio (alarm.mp3)
     alarmAudio.pause();
     alarmAudio.currentTime = 0;
+    // If a Web Audio API context was initialized (fallback synth), close it to stop any ongoing oscillators
+    if (audioCtx && audioCtx.state !== "closed") {
+        audioCtx.close();
+        audioCtx = null;
+        mainGainNode = null;
+    }
     isRinging = false;
-    logDebug("アラーム停止。");
+    hasTriggered = true; // 停止後に再トリガーさせない
+    logDebug("アラーム停止（全ての音源を停止）。");
 }
 
 // ================================================================
@@ -303,7 +313,7 @@ function tick() {
         cdSecondsEl.textContent = "00";
         cdMsEl.textContent = ".00";
 
-        if (isArmed && !isRinging) {
+        if (isArmed && !isRinging && !hasTriggered) {
             logDebug("目標時刻に到達！");
             alarmModalEl.classList.remove("hidden");
             const t = new Date(targetTime);
@@ -340,6 +350,7 @@ btnDebug10s.addEventListener("click", () => {
         setArmedState(true);
     }
     
+    hasTriggered = false; // デバッグリセット
     if (isRinging) {
         stopAlarm();
         alarmModalEl.classList.add("hidden");
@@ -349,6 +360,7 @@ btnDebug10s.addEventListener("click", () => {
 btnDebugReset.addEventListener("click", () => {
     targetTime = DEFAULT_TARGET_TIME;
     document.querySelector(".header .subtitle").textContent = "目標時刻: 8月10日 11:45:14";
+    hasTriggered = false; // リセット
     stopAlarm();
     alarmModalEl.classList.add("hidden");
     logDebug("リセットしました。");
