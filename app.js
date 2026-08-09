@@ -7,6 +7,7 @@ let targetTime = DEFAULT_TARGET_TIME;
 // 状態管理
 let timeOffset = 0;
 let isSynced = false;
+let isArmed = true; // 開いた瞬間に有効化
 let isRinging = false;
 
 // アラーム音: プロジェクトフォルダ内の alarm.mp3 を使用
@@ -22,6 +23,8 @@ const cdSecondsEl = document.getElementById("cd-seconds");
 const cdMsEl = document.querySelector(".cd-ms");
 const currentDateEl = document.getElementById("current-date");
 const currentTimeEl = document.getElementById("current-time");
+const armedTextEl = document.getElementById("armed-text");
+const btnArmEl = document.getElementById("btn-arm");
 const volumeSliderEl = document.getElementById("volume-slider");
 const alarmModalEl = document.getElementById("alarm-modal");
 const btnStopAlarmEl = document.getElementById("btn-stop-alarm");
@@ -29,6 +32,11 @@ const btnTestEl = document.getElementById("btn-test");
 const btnDebug10s = document.getElementById("btn-debug-10s");
 const btnDebugReset = document.getElementById("btn-debug-reset");
 const debugLogEl = document.getElementById("debug-log");
+
+// プリセット（デフォルト）音用
+let audioCtx = null;
+let mainGainNode = null;
+let presetIntervalId = null;
 
 function logDebug(msg) {
     const ts = new Date().toLocaleTimeString();
@@ -114,8 +122,32 @@ function updateSyncUI(ok, text) {
 syncWithNetworkTime();
 
 // ================================================================
-// 3. 音量スライダー
+// 3. アラームの有効化 / 解除コントロール
 // ================================================================
+function setArmedState(arm) {
+    isArmed = arm;
+    if (isArmed) {
+        armedTextEl.textContent = "有効中";
+        armedTextEl.className = "status-val status-active";
+        btnArmEl.textContent = "アラームを無効化する";
+        btnArmEl.className = "btn-main btn-armed-state";
+        logDebug("アラームを有効化しました。");
+    } else {
+        stopAlarm();
+        armedTextEl.textContent = "解除中";
+        armedTextEl.className = "status-val";
+        btnArmEl.textContent = "アラームを有効化する";
+        btnArmEl.className = "btn-main";
+        alarmModalEl.classList.add("hidden");
+        logDebug("アラームを解除しました。");
+    }
+}
+
+btnArmEl.addEventListener("click", () => {
+    setArmedState(!isArmed);
+});
+
+// 音量スライダー
 alarmAudio.volume = parseFloat(volumeSliderEl.value);
 volumeSliderEl.addEventListener("input", (e) => {
     alarmAudio.volume = parseFloat(e.target.value);
@@ -141,6 +173,10 @@ function startAlarm() {
 }
 
 function stopAlarm() {
+    if (presetIntervalId) {
+        clearInterval(presetIntervalId);
+        presetIntervalId = null;
+    }
     alarmAudio.pause();
     alarmAudio.currentTime = 0;
     isRinging = false;
@@ -148,7 +184,42 @@ function stopAlarm() {
 }
 
 // ================================================================
-// 5. ブラウザ通知
+// 5. デフォルト音（Web Audio API シンセ） - テスト用フォールバック
+// ================================================================
+function initAudioCtx() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        mainGainNode = audioCtx.createGain();
+        mainGainNode.connect(audioCtx.destination);
+    }
+    mainGainNode.gain.setValueAtTime(parseFloat(volumeSliderEl.value), audioCtx.currentTime);
+}
+
+function playDefaultAlarmOnce(time) {
+    const ctx = audioCtx;
+    const dest = mainGainNode;
+    const freqs = [880, 1100];
+    freqs.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.setValueAtTime(freq, time + i * 0.2);
+        const filter = ctx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(3000, time);
+        g.gain.setValueAtTime(0, time + i * 0.2);
+        g.gain.linearRampToValueAtTime(0.2, time + i * 0.2 + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, time + i * 0.2 + 0.15);
+        osc.connect(filter);
+        filter.connect(g);
+        g.connect(dest);
+        osc.start(time + i * 0.2);
+        osc.stop(time + i * 0.2 + 0.2);
+    });
+}
+
+// ================================================================
+// 6. ブラウザ通知
 // ================================================================
 function sendNotification() {
     if (!("Notification" in window) || Notification.permission !== "granted") return;
@@ -167,7 +238,7 @@ function sendNotification() {
 }
 
 // ================================================================
-// 6. テスト再生
+// 7. テスト再生
 // ================================================================
 let isTesting = false;
 btnTestEl.addEventListener("click", () => {
@@ -178,21 +249,33 @@ btnTestEl.addEventListener("click", () => {
         isTesting = false;
         return;
     }
-    alarmAudio.volume = parseFloat(volumeSliderEl.value);
-    alarmAudio.loop = false; // テスト時はループしない
-    alarmAudio.play().then(() => {
-        btnTestEl.textContent = "停止";
-        isTesting = true;
-    }).catch((err) => logDebug("テスト再生失敗: " + err.message));
-    alarmAudio.onended = () => {
-        btnTestEl.textContent = "テスト再生";
-        isTesting = false;
-        alarmAudio.loop = true; // 本番用にループに戻す
-    };
+
+    // テスト再生時は一瞬 AudioContext や Audio をアクティブにしてブラウザ権限を通しやすくする
+    if (alarmAudio.src.includes("alarm.mp3")) {
+        alarmAudio.volume = parseFloat(volumeSliderEl.value);
+        alarmAudio.loop = false;
+        alarmAudio.play().then(() => {
+            btnTestEl.textContent = "停止";
+            isTesting = true;
+            logDebug("テスト再生開始。");
+        }).catch((err) => {
+            logDebug("再生に失敗しました（alarm.mp3がない場合は鳴りません）: " + err.message);
+            // 代替としてシンセ音を再生
+            initAudioCtx();
+            if (audioCtx.state === "suspended") audioCtx.resume();
+            playDefaultAlarmOnce(audioCtx.currentTime);
+            logDebug("デフォルトシンセ音でテスト再生しました。");
+        });
+        alarmAudio.onended = () => {
+            btnTestEl.textContent = "テスト再生";
+            isTesting = false;
+            alarmAudio.loop = true;
+        };
+    }
 });
 
 // ================================================================
-// 7. アラーム停止ボタン
+// 8. アラーム停止ボタン
 // ================================================================
 btnStopAlarmEl.addEventListener("click", () => {
     stopAlarm();
@@ -200,7 +283,7 @@ btnStopAlarmEl.addEventListener("click", () => {
 });
 
 // ================================================================
-// 8. 時刻更新 & アラーム判定ループ
+// 9. 時刻更新 & アラーム判定ループ
 // ================================================================
 function pad2(n) { return String(n).padStart(2, "0"); }
 
@@ -220,7 +303,7 @@ function tick() {
         cdSecondsEl.textContent = "00";
         cdMsEl.textContent = ".00";
 
-        if (!isRinging) {
+        if (isArmed && !isRinging) {
             logDebug("目標時刻に到達！");
             alarmModalEl.classList.remove("hidden");
             const t = new Date(targetTime);
@@ -242,7 +325,7 @@ function tick() {
 requestAnimationFrame(tick);
 
 // ================================================================
-// 9. デバッグ
+// 10. デバッグ
 // ================================================================
 btnDebug10s.addEventListener("click", () => {
     const now = Date.now() + timeOffset;
@@ -251,6 +334,12 @@ btnDebug10s.addEventListener("click", () => {
     document.querySelector(".header .subtitle").textContent =
         `【テスト中】${pad2(t.getHours())}:${pad2(t.getMinutes())}:${pad2(t.getSeconds())} に鳴ります`;
     logDebug("テスト: 10秒後にアラーム設定。");
+    
+    // テスト時は自動的に有効化
+    if (!isArmed) {
+        setArmedState(true);
+    }
+    
     if (isRinging) {
         stopAlarm();
         alarmModalEl.classList.add("hidden");

@@ -143,6 +143,37 @@ input[type="range"] {
     flex-grow: 1;
 }
 
+.button-group {
+    display: flex;
+    gap: 8px;
+}
+
+.button-group button {
+    flex: 1;
+    font-size: 0.9rem;
+    padding: 12px 8px;
+}
+
+.btn-main {
+    background-color: #3b82f6;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: bold;
+    height: auto;
+}
+
+.btn-main:hover {
+    background-color: #2563eb;
+}
+
+.btn-main.btn-armed-state {
+    background-color: #ef4444; /* 解除ボタン用なので赤色にします */
+}
+
+.btn-main.btn-armed-state:hover {
+    background-color: #dc2626;
+}
+
 button {
     background-color: #334155;
     color: #e2e8f0;
