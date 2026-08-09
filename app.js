@@ -365,3 +365,91 @@ btnDebugReset.addEventListener("click", () => {
     alarmModalEl.classList.add("hidden");
     logDebug("リセットしました。");
 });
+
+// ================================================================
+// 11. 方角コンパス（Geolocation API）
+// ================================================================
+const TARGET_LAT = 35.665562;
+const TARGET_LNG = 139.669588;
+
+const compassNeedleEl = document.getElementById("compass-needle");
+const compassBearingEl = document.getElementById("compass-bearing");
+const compassDistanceEl = document.getElementById("compass-distance");
+
+function toRad(deg) { return deg * Math.PI / 180; }
+function toDeg(rad) { return rad * 180 / Math.PI; }
+
+function calcBearing(lat1, lng1, lat2, lng2) {
+    const dLng = toRad(lng2 - lng1);
+    const y = Math.sin(dLng) * Math.cos(toRad(lat2));
+    const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2))
+            - Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLng);
+    let brng = toDeg(Math.atan2(y, x));
+    return (brng + 360) % 360;
+}
+
+function calcDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371; // km
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat / 2) ** 2
+            + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function bearingToDirection(b) {
+    const dirs = ["北", "北北東", "北東", "東北東", "東", "東南東", "南東", "南南東",
+                  "南", "南南西", "南西", "西南西", "西", "西北西", "北西", "北北西"];
+    return dirs[Math.round(b / 22.5) % 16];
+}
+
+function updateCompass(lat, lng) {
+    const bearing = calcBearing(lat, lng, TARGET_LAT, TARGET_LNG);
+    const distance = calcDistance(lat, lng, TARGET_LAT, TARGET_LNG);
+    const direction = bearingToDirection(bearing);
+
+    compassNeedleEl.style.transform = `rotate(${bearing}deg)`;
+    compassBearingEl.textContent = `${direction} (${bearing.toFixed(1)}°)`;
+
+    if (distance < 1) {
+        compassDistanceEl.textContent = `距離: ${(distance * 1000).toFixed(0)}m`;
+    } else {
+        compassDistanceEl.textContent = `距離: ${distance.toFixed(2)}km`;
+    }
+
+    logDebug(`方角更新: ${direction} ${bearing.toFixed(1)}°, 距離: ${distance.toFixed(2)}km`);
+}
+
+function initGeolocation() {
+    if (!("geolocation" in navigator)) {
+        compassBearingEl.textContent = "位置情報API非対応";
+        logDebug("Geolocation API 非対応。");
+        return;
+    }
+
+    // 初回取得
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            updateCompass(pos.coords.latitude, pos.coords.longitude);
+        },
+        (err) => {
+            compassBearingEl.textContent = "位置情報を取得できません";
+            compassDistanceEl.textContent = "ブラウザの位置情報を許可してください";
+            logDebug("Geolocation エラー: " + err.message);
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
+
+    // 位置変更の監視（移動中に更新）
+    navigator.geolocation.watchPosition(
+        (pos) => {
+            updateCompass(pos.coords.latitude, pos.coords.longitude);
+        },
+        (err) => {
+            logDebug("Geolocation watch エラー: " + err.message);
+        },
+        { enableHighAccuracy: true, maximumAge: 5000 }
+    );
+}
+
+initGeolocation();

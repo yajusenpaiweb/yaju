@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>野獣先輩</title>
-    <meta name="description" content="野獣先輩 - 8月10日 11時45分14秒">
+    <meta name="description" content="野獣先輩 - 8月10日 11時45分14秒 高精度アラーム">
     <link rel="icon" href="yaju.jpg" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -52,6 +52,28 @@
                 <button id="btn-arm" class="btn-main btn-armed-state">アラームを無効化する</button>
                 <button id="btn-test">テスト再生</button>
             </div>
+        </div>
+
+        <!-- 方角表示 -->
+        <div class="card compass-card">
+            <div class="label">目的地への方角</div>
+            <div class="compass-target-name">北沢3-23-14 コートファーストステージ</div>
+            <div class="compass-wrapper">
+                <div class="compass-ring">
+                    <div class="compass-labels">
+                        <span class="cl-n">N</span>
+                        <span class="cl-e">E</span>
+                        <span class="cl-s">S</span>
+                        <span class="cl-w">W</span>
+                    </div>
+                    <div id="compass-needle" class="compass-needle" style="transform: rotate(0deg);">
+                        <div class="needle-tip"></div>
+                        <div class="needle-tail"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="compass-bearing" class="compass-bearing">位置情報を取得中...</div>
+            <div id="compass-distance" class="compass-distance"></div>
         </div>
 
         <details class="debug-panel">
