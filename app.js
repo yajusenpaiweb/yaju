@@ -7,7 +7,7 @@ let targetTime = DEFAULT_TARGET_TIME;
 // 状態管理
 let timeOffset = 0;
 let isSynced = false;
-let isArmed = true; // 開いた瞬間に有効化
+let isArmed = localStorage.getItem("yaju-isArmed") !== "false"; // 開いた瞬間に有効化（キャッシュがあれば復元）
 let isRinging = false;
 let hasTriggered = false; // 一度鳴ったら再トリガーしない
 
@@ -136,6 +136,7 @@ syncWithNetworkTime();
 // ================================================================
 function setArmedState(arm) {
     isArmed = arm;
+    localStorage.setItem("yaju-isArmed", isArmed);
     if (isArmed) {
         armedTextEl.textContent = "有効中";
         armedTextEl.className = "status-val status-active";
@@ -157,10 +158,19 @@ btnArmEl.addEventListener("click", () => {
     setArmedState(!isArmed);
 });
 
+// 初期状態をUIに反映
+setArmedState(isArmed);
+
 // 音量スライダー
+const savedVolume = localStorage.getItem("yaju-volume");
+if (savedVolume !== null) {
+    volumeSliderEl.value = savedVolume;
+}
 alarmAudio.volume = parseFloat(volumeSliderEl.value);
+
 volumeSliderEl.addEventListener("input", (e) => {
     alarmAudio.volume = parseFloat(e.target.value);
+    localStorage.setItem("yaju-volume", e.target.value);
 });
 
 // ================================================================
