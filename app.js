@@ -1,7 +1,8 @@
 // app.js
 
-// ターゲット時刻: 2026年8月10日 11時45分14秒 JST
-const DEFAULT_TARGET_TIME = new Date("2026-08-10T11:45:14+09:00").getTime();
+// ターゲット年と時刻
+let targetYear = new Date().getFullYear();
+let DEFAULT_TARGET_TIME = new Date(`${targetYear}-08-10T11:45:14+09:00`).getTime();
 let targetTime = DEFAULT_TARGET_TIME;
 
 // 状態管理
@@ -29,7 +30,40 @@ const cddMinutesEl = document.getElementById("cdd-minutes");
 const cddSecondsEl = document.getElementById("cdd-seconds");
 const cddMsEl = document.getElementById("cdd-ms");
 
-const TARGET_DATE_TIME = new Date("2026-08-10T00:00:00+09:00").getTime();
+let TARGET_DATE_TIME = new Date(`${targetYear}-08-10T00:00:00+09:00`).getTime();
+
+function updateTargetYear(now) {
+    const d = new Date(now);
+    let expectedYear = d.getFullYear();
+    const resetTime = new Date(`${expectedYear}-08-11T00:00:00+09:00`).getTime();
+    if (now >= resetTime) {
+        expectedYear += 1;
+    }
+    
+    if (targetYear !== expectedYear || !window._yearInitialized) {
+        window._yearInitialized = true;
+        const oldTargetTime = DEFAULT_TARGET_TIME;
+        targetYear = expectedYear;
+        DEFAULT_TARGET_TIME = new Date(`${targetYear}-08-10T11:45:14+09:00`).getTime();
+        TARGET_DATE_TIME = new Date(`${targetYear}-08-10T00:00:00+09:00`).getTime();
+        
+        // テスト再生中などでtargetTimeが変更されていなければ、新しい年に更新
+        if (targetTime === oldTargetTime) {
+            targetTime = DEFAULT_TARGET_TIME;
+            hasTriggered = false; // 年が変わったら再度アラームが鳴るようにリセット
+        }
+
+        const subtitleEl = document.querySelector(".header .subtitle");
+        if (subtitleEl) subtitleEl.textContent = `目標時刻: ${targetYear}年8月10日 11:45:14`;
+        
+        const cddLabelEl = document.querySelector("#countdown-display-day")?.previousElementSibling;
+        if (cddLabelEl) cddLabelEl.textContent = `${targetYear}年8月10日 (00:00:00) まで`;
+        
+        if (typeof logDebug === "function") {
+            logDebug(`ターゲット年を ${targetYear} 年に更新しました。`);
+        }
+    }
+}
 
 const currentDateEl = document.getElementById("current-date");
 const currentTimeEl = document.getElementById("current-time");
@@ -318,6 +352,8 @@ function pad2(n) { return String(n).padStart(2, "0"); }
 
 function tick() {
     const now = Date.now() + timeOffset;
+    updateTargetYear(now); // 8月11日になったら自動で来年に切り替え
+
     const d = new Date(now);
     const wd = ["日", "月", "火", "水", "木", "金", "土"];
 
@@ -394,7 +430,7 @@ btnDebug10s.addEventListener("click", () => {
 
 btnDebugReset.addEventListener("click", () => {
     targetTime = DEFAULT_TARGET_TIME;
-    document.querySelector(".header .subtitle").textContent = "目標時刻: 8月10日 11:45:14";
+    document.querySelector(".header .subtitle").textContent = `目標時刻: ${targetYear}年8月10日 11:45:14`;
     hasTriggered = false; // リセット
     stopAlarm();
     alarmModalEl.classList.add("hidden");
