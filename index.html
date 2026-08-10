@@ -34,9 +34,9 @@
         </div>
 
         <div class="card">
-            <div class="label">目標時刻 (11:45:14) まで</div>
+            <div id="countdown-label" class="label">残り時間</div>
             <div id="countdown-display" class="countdown">
-                <span id="cd-hours">00</span>:<span id="cd-minutes">00</span>:<span id="cd-seconds">00</span><span class="cd-ms" id="cd-ms">.00</span>
+                <span id="cd-days-group" class="hidden"><span id="cd-days">0</span>日 </span><span id="cd-hours">00</span>:<span id="cd-minutes">00</span>:<span id="cd-seconds">00</span><span class="cd-ms" id="cd-ms">.00</span>
             </div>
         </div>
 
@@ -81,6 +81,17 @@
             </div>
             <div id="compass-bearing" class="compass-bearing">位置情報を取得中...</div>
             <div id="compass-distance" class="compass-distance"></div>
+        </div>
+
+        <!-- 検索リンク -->
+        <div class="card">
+            <div class="label">関連検索</div>
+            <div class="search-links">
+                <a href="https://www.google.com/search?q=%E9%87%8E%E7%8D%A3%E5%85%88%E8%BC%A9" target="_blank" class="search-btn">野獣先輩</a>
+                <a href="https://www.google.com/search?q=%E9%87%8E%E7%8D%A3%E3%81%AE%E6%97%A5" target="_blank" class="search-btn">野獣の日</a>
+                <a href="https://www.google.com/search?q=%E9%87%8E%E7%8D%A3%E3%82%A2%E3%83%A9%E3%83%BC%E3%83%A0" target="_blank" class="search-btn">野獣アラーム</a>
+                <a href="https://www.google.com/search?q=yaju%26u" target="_blank" class="search-btn">yaju&amp;u</a>
+            </div>
         </div>
 
         <details class="debug-panel">

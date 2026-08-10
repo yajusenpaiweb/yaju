@@ -294,6 +294,34 @@ button:hover {
     color: #94a3b8;
 }
 
+/* 検索リンク */
+.search-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.search-btn {
+    background-color: #334155;
+    color: #e2e8f0;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.1s;
+    border: 1px solid #475569;
+}
+
+.search-btn:hover {
+    background-color: #475569;
+    transform: translateY(-2px);
+    border-color: #38bdf8;
+    color: #fff;
+}
+
 .hidden {
     display: none !important;
 }

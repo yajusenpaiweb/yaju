@@ -23,6 +23,9 @@ const cdHoursEl = document.getElementById("cd-hours");
 const cdMinutesEl = document.getElementById("cd-minutes");
 const cdSecondsEl = document.getElementById("cd-seconds");
 const cdMsEl = document.getElementById("cd-ms");
+const cdDaysGroupEl = document.getElementById("cd-days-group");
+const cdDaysEl = document.getElementById("cd-days");
+const countdownLabelEl = document.getElementById("countdown-label");
 
 const cddDaysEl = document.getElementById("cdd-days");
 const cddHoursEl = document.getElementById("cdd-hours");
@@ -54,10 +57,7 @@ function updateTargetYear(now) {
         }
 
         const subtitleEl = document.querySelector(".header .subtitle");
-        if (subtitleEl) subtitleEl.textContent = `目標時刻: ${targetYear}年8月10日 11:45:14`;
-        
-        const cddLabelEl = document.querySelector("#countdown-display-day")?.previousElementSibling;
-        if (cddLabelEl) cddLabelEl.textContent = `${targetYear}年8月10日 (00:00:00) まで`;
+        if (subtitleEl) subtitleEl.textContent = "目標時刻: 8月10日 11:45:14";
         
         if (typeof logDebug === "function") {
             logDebug(`ターゲット年を ${targetYear} 年に更新しました。`);
@@ -379,10 +379,24 @@ function tick() {
     const left = targetTime - now;
 
     if (left <= 0) {
-        cdHoursEl.textContent = "00";
-        cdMinutesEl.textContent = "00";
-        cdSecondsEl.textContent = "00";
-        cdMsEl.textContent = ".00";
+        // 経過時間を表示
+        countdownLabelEl.textContent = "経過時間";
+        const elapsed = now - targetTime;
+        const eSec = Math.floor(elapsed / 1000);
+        const eDays = Math.floor(eSec / 86400);
+        const eHrs = Math.floor((eSec % 86400) / 3600);
+
+        if (eDays > 0) {
+            cdDaysGroupEl.classList.remove("hidden");
+            cdDaysEl.textContent = eDays;
+        } else {
+            cdDaysGroupEl.classList.add("hidden");
+        }
+        
+        cdHoursEl.textContent = pad2(eHrs);
+        cdMinutesEl.textContent = pad2(Math.floor((eSec % 3600) / 60));
+        cdSecondsEl.textContent = pad2(eSec % 60);
+        cdMsEl.textContent = "." + pad2(Math.floor((elapsed % 1000) / 10));
 
         if (isArmed && !isRinging && !hasTriggered) {
             logDebug("目標時刻に到達！");
@@ -393,8 +407,20 @@ function tick() {
             startAlarm();
         }
     } else {
+        // 残り時間を表示
+        countdownLabelEl.textContent = "残り時間";
         const s = Math.floor(left / 1000);
-        cdHoursEl.textContent = pad2(Math.floor(s / 3600));
+        const days = Math.floor(s / 86400);
+        const hrs = Math.floor((s % 86400) / 3600);
+        
+        if (days > 0) {
+            cdDaysGroupEl.classList.remove("hidden");
+            cdDaysEl.textContent = days;
+        } else {
+            cdDaysGroupEl.classList.add("hidden");
+        }
+
+        cdHoursEl.textContent = pad2(hrs);
         cdMinutesEl.textContent = pad2(Math.floor((s % 3600) / 60));
         cdSecondsEl.textContent = pad2(s % 60);
         cdMsEl.textContent = "." + pad2(Math.floor((left % 1000) / 10));
@@ -430,7 +456,7 @@ btnDebug10s.addEventListener("click", () => {
 
 btnDebugReset.addEventListener("click", () => {
     targetTime = DEFAULT_TARGET_TIME;
-    document.querySelector(".header .subtitle").textContent = `目標時刻: ${targetYear}年8月10日 11:45:14`;
+    document.querySelector(".header .subtitle").textContent = "目標時刻: 8月10日 11:45:14";
     hasTriggered = false; // リセット
     stopAlarm();
     alarmModalEl.classList.add("hidden");
