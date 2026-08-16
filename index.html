@@ -3,93 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>野獣先輩 - インターネットミームの歴史と影響</title>
-    <meta name="description" content="日本のインターネット文化において有名なネットミーム「野獣先輩」についての解説。その由来、ミーム化の背景、社会への影響についてまとめます。">
-    <meta name="keywords" content="野獣先輩, ネットミーム, インターネット文化, 114514, ニコニコ動画, 語録">
-    
-    <!-- OGP (Open Graph Protocol) -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="野獣先輩 - インターネットミームの歴史と影響">
-    <meta property="og:description" content="日本のインターネット文化において有名なネットミーム「野獣先輩」についての解説。その由来、ミーム化の背景、社会への影響についてまとめます。">
-    <meta property="og:url" content="https://yajusenpaiweb.github.io/-/">
-    <meta property="og:site_name" content="野獣先輩 - インターネットミームの歴史と影響">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="野獣先輩 - インターネットミームの歴史と影響">
-    <meta name="twitter:description" content="日本のインターネット文化において有名なネットミーム「野獣先輩」についての解説。">
-
+    <title>野獣先輩</title>
+    <meta name="description" content="野獣先輩 - 8月10日 11時45分14秒 高精度アラーム">
+    <link rel="icon" href="yaju.jpg" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="background-effects">
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
-    </div>
-    
-    <header class="hero">
-        <div class="container">
-            <h1 class="fade-in-up">The Internet Meme:<br><span class="highlight">野獣先輩</span></h1>
-            <p class="subtitle fade-in-up delay-1">日本のインターネット文化における特異点。<br>その背景と影響を紐解く。</p>
-        </div>
-    </header>
-
     <main class="container">
-        <section class="card fade-in-up delay-2">
-            <h2>1. 概要と由来</h2>
-            <p>「野獣先輩」とは、2000年代初頭の映像作品に出演していた特定の人物を指すインターネット上の通称です。作中での独特な言動や強烈なキャラクター性から、2ちゃんねる（現5ちゃんねる）やニコニコ動画などのコミュニティにおいて、次第に注目を集めるようになりました。</p>
-            <p>ファンの間では「田所浩二（たどころ こうじ）」などの架空の名称で呼ばれることもありますが、これはインターネット上で後付けされたものであり、本名ではありません。</p>
-        </section>
+        <div id="sync-status" class="sync-status">
+            <span id="sync-text">時刻同期中...</span>
+        </div>
 
-        <section class="card fade-in-up delay-3">
-            <h2>2. ネットミーム化の背景</h2>
-            <p>なぜこの人物が爆発的なネットミームとなったのか。その最大の理由は「素材としての抽象度の高さ」にあります。</p>
-            <div class="grid">
-                <div class="grid-item">
-                    <h3>MAD動画の素材として</h3>
-                    <p>彼の発言や独特なイントネーションは、元の文脈を離れて切り抜かれ、全く別の動画や音楽と合成する「MAD動画」の素材として多用されました。ニコニコ動画を中心に、一種の共通言語のように扱われました。</p>
-                </div>
-                <div class="grid-item">
-                    <h3>汎用性の高い「語録」</h3>
-                    <p>作中のセリフは「語録」と呼ばれ、「114514（いいよこいよ）」などに代表される言葉が、日常のSNSでの会話や時事問題への皮肉など、あらゆる文脈で転用可能だったことが流行に拍車をかけました。</p>
+        <div class="yaju-container">
+            <img src="yaju.jpg" alt="野獣先輩" id="yaju-img">
+        </div>
+
+        <header class="header">
+            <h1>野獣先輩</h1>
+            <p class="subtitle">目標時刻: 8月10日 11:45:14</p>
+        </header>
+
+        <div class="card">
+            <div class="label">8月10日 (00:00:00) まで</div>
+            <div id="countdown-display-day" class="countdown" style="font-size: 1.5rem;">
+                <span id="cdd-days">0</span>日 <span id="cdd-hours">00</span>:<span id="cdd-minutes">00</span>:<span id="cdd-seconds">00</span><span class="cd-ms" id="cdd-ms">.00</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div id="countdown-label" class="label">残り時間</div>
+            <div id="countdown-display" class="countdown">
+                <span id="cd-days-group" class="hidden"><span id="cd-days">0</span>日 </span><span id="cd-hours">00</span>:<span id="cd-minutes">00</span>:<span id="cd-seconds">00</span><span class="cd-ms" id="cd-ms">.00</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="label">日本標準時 (同期済)</div>
+            <div id="current-date" class="date">----/--/--</div>
+            <div id="current-time" class="time">00:00:00</div>
+        </div>
+
+        <div class="card settings">
+            <div class="status-row">
+                <span>アラーム:</span>
+                <span id="armed-text" class="status-val status-active">有効中</span>
+            </div>
+            <div class="volume-row">
+                <span>音量:</span>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.7">
+            </div>
+            <div class="button-group">
+                <button id="btn-arm" class="btn-main btn-armed-state">アラームを無効化する</button>
+                <button id="btn-test">テスト再生</button>
+            </div>
+        </div>
+
+        <!-- 方角表示 -->
+        <div class="card compass-card">
+            <div class="label">目的地への方角</div>
+            <div class="compass-target-name">北沢3-23-14 コートファーストステージ</div>
+            <div class="compass-wrapper">
+                <div class="compass-ring">
+                    <div class="compass-labels">
+                        <span class="cl-n">N</span>
+                        <span class="cl-e">E</span>
+                        <span class="cl-s">S</span>
+                        <span class="cl-w">W</span>
+                    </div>
+                    <div id="compass-needle" class="compass-needle" style="transform: rotate(0deg);">
+                        <div class="needle-tip"></div>
+                        <div class="needle-tail"></div>
+                    </div>
                 </div>
             </div>
-            <p class="note">※現在では、原典を知らない世代にも「キャラクター」や「語録」だけが一人歩きして浸透しています。</p>
-        </section>
+            <div id="compass-bearing" class="compass-bearing">位置情報を取得中...</div>
+            <div id="compass-distance" class="compass-distance"></div>
+        </div>
 
-        <section class="card fade-in-up delay-4">
-            <h2>3. 社会的影響と問題点</h2>
-            <p>ネットミームとしての流行は、時として現実世界にも波及し、社会問題化する側面を持っています。</p>
-            <div class="alert-box">
-                <div class="alert-icon">⚠️</div>
-                <div class="alert-content">
-                    <h3>「野獣の日」と迷惑行為</h3>
-                    <p>「810（やじゅう）」の語呂合わせから、8月10日はファンから「野獣の日」と呼ばれています。一部のファンが作品の撮影地とされる場所（聖地）に集まり、騒音や卑猥な言動、近隣住民への迷惑行為を働く事態が毎年問題視されています。警察が出動する騒ぎに発展することもあり、ネット空間の「悪ふざけ」を現実に持ち込むことへの批判が強まっています。</p>
-                </div>
+        <!-- 検索リンク -->
+        <div class="card">
+            <div class="label">関連検索</div>
+            <div class="search-links">
+                <a href="https://www.google.com/search?q=%E9%87%8E%E7%8D%A3%E5%85%88%E8%BC%A9" target="_blank" class="search-btn">野獣先輩</a>
+                <a href="https://www.google.com/search?q=%E9%87%8E%E7%8D%A3%E3%81%AE%E6%97%A5" target="_blank" class="search-btn">野獣の日</a>
+                <a href="https://www.google.com/search?q=%E9%87%8E%E7%8D%A3%E3%82%A2%E3%83%A9%E3%83%BC%E3%83%A0" target="_blank" class="search-btn">野獣アラーム</a>
+                <a href="https://www.google.com/search?q=yaju%26u" target="_blank" class="search-btn">yaju&amp;u</a>
             </div>
-        </section>
+        </div>
 
-        <section class="card fade-in-up delay-4" style="transition-delay: 0.5s;">
-            <h2>4. 関連リンク</h2>
-            <p>関連するファンサイトやまとめ情報については、以下の外部サイトも参照してください。</p>
-            <div style="margin-top: 16px;">
-                <a href="https://yajusenpaiweb.github.io/yaju/" target="_blank" rel="noopener noreferrer" class="button-link">
-                    野獣先輩 Web ↗
-                </a>
+        <details class="debug-panel">
+            <summary>🔧 動作テスト用ツール</summary>
+            <div class="debug-buttons">
+                <button id="btn-debug-10s">10秒後にセット</button>
+                <button id="btn-debug-reset">リセット</button>
             </div>
-        </section>
+            <div id="debug-log" class="debug-log"></div>
+        </details>
     </main>
 
-    <footer>
-        <p>&copy; 2026 Internet Meme Research</p>
-        <div style="margin-top: 20px;">
-            <img src="https://count.getloli.com/@yaju?name=yaju&theme=random&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" alt="アクセスカウンター">
+    <div id="alarm-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>⏰ 時間になりました！</h2>
+            <div class="modal-time font-orbitron">11:45:14</div>
+            <button id="btn-stop-alarm">アラームを停止</button>
         </div>
-    </footer>
+    </div>
 
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
