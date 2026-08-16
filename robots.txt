@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yajusenpaiweb.github.io/-/sitemap.xml
