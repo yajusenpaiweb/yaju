@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>野獣先輩</title>
+    <meta name="description" content="野獣先輩 - 8月10日 11時45分14秒 高精度アラーム">
+    <link rel="icon" href="yaju.jpg" type="image/jpeg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="container">
+        <div id="sync-status" class="sync-status">
+            <span id="sync-text">時刻同期中...</span>
+        </div>
+
+        <div class="yaju-container">
+            <img src="yaju.jpg" alt="野獣先輩" id="yaju-img">
+        </div>
+
+        <header class="header">
+            <h1>野獣先輩</h1>
+            <p class="subtitle">目標時刻: 8月10日 11:45:14</p>
+        </header>
+
+        <div class="card">
+            <div class="label">8月10日 (00:00:00) まで</div>
+            <div id="countdown-display-day" class="countdown" style="font-size: 1.5rem;">
+                <span id="cdd-days">0</span>日 <span id="cdd-hours">00</span>:<span id="cdd-minutes">00</span>:<span id="cdd-seconds">00</span><span class="cd-ms" id="cdd-ms">.00</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div id="countdown-label" class="label">残り時間</div>
+            <div id="countdown-display" class="countdown">
+                <span id="cd-days-group" class="hidden"><span id="cd-days">0</span>日 </span><span id="cd-hours">00</span>:<span id="cd-minutes">00</span>:<span id="cd-seconds">00</span><span class="cd-ms" id="cd-ms">.00</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="label">日本標準時 (同期済)</div>
+            <div id="current-date" class="date">----/--/--</div>
+            <div id="current-time" class="time">00:00:00</div>
+        </div>
+
+        <div class="card settings">
+            <div class="status-row">
+                <span>アラーム:</span>
+                <span id="armed-text" class="status-val status-active">有効中</span>
+            </div>
+            <div class="volume-row">
+                <span>音量:</span>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.7">
+            </div>
+            <div class="button-group">
+                <button id="btn-arm" class="btn-main btn-armed-state">アラームを無効化する</button>
+                <button id="btn-test">テスト再生</button>
+            </div>
+        </div>
+
+        <!-- 方角表示 -->
+        <div class="card compass-card">
+            <div class="label">目的地への方角</div>
+            <div class="compass-target-name">北沢3-23-14 コートファーストステージ</div>
+            <div class="compass-wrapper">
+                <div class="compass-ring">
+                    <div class="compass-labels">
+                        <span class="cl-n">N</span>
+                        <span class="cl-e">E</span>
+                        <span class="cl-s">S</span>
+                        <span class="cl-w">W</span>
+                    </div>
+                    <div id="compass-needle" class="compass-needle" style="transform: rotate(0deg);">
+                        <div class="needle-tip"></div>
+                        <div class="needle-tail"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="compass-bearing" class="compass-bearing">位置情報を取得中...</div>
+            <div id="compass-distance" class="compass-distance"></div>
+        </div>
+
+        <!-- 検索リンク -->
+        <div class="card">
+            <div class="label">関連検索</div>
+            <div class="search-links">
+                <a href="https://www.google.com/search?q=%E9%87%8E%E7%8D%A3%E5%85%88%E8%BC%A9" target="_blank" class="search-btn">野獣先輩</a>
+                <a href="https://www.google.com/search?q=%E9%87%8E%E7%8D%A3%E3%81%AE%E6%97%A5" target="_blank" class="search-btn">野獣の日</a>
+                <a href="https://www.google.com/search?q=%E9%87%8E%E7%8D%A3%E3%82%A2%E3%83%A9%E3%83%BC%E3%83%A0" target="_blank" class="search-btn">野獣アラーム</a>
+                <a href="https://www.google.com/search?q=yaju%26u" target="_blank" class="search-btn">yaju&amp;u</a>
+            </div>
+        </div>
+
+        <details class="debug-panel">
+            <summary>🔧 動作テスト用ツール</summary>
+            <div class="debug-buttons">
+                <button id="btn-debug-10s">10秒後にセット</button>
+                <button id="btn-debug-reset">リセット</button>
+            </div>
+            <div id="debug-log" class="debug-log"></div>
+        </details>
+    </main>
+
+    <div id="alarm-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>⏰ 時間になりました！</h2>
+            <div class="modal-time font-orbitron">11:45:14</div>
+            <button id="btn-stop-alarm">アラームを停止</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
